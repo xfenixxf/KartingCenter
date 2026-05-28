@@ -1,0 +1,36 @@
+﻿<Window x:Class="KartingCenter.Windows.KartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Карт" Height="365" Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Серийный номер:" FontWeight="Bold" Margin="0,5"/>
+        <TextBox x:Name="SerialNumberBox" Grid.Row="1" Margin="0,5" Height="30"/>
+
+        <TextBlock Grid.Row="2" Text="Тип карта:" FontWeight="Bold" Margin="0,5"/>
+        <ComboBox x:Name="CartTypeCombo" Grid.Row="3" Margin="0,5" Height="30" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+
+        <TextBlock Grid.Row="4" Text="Цена (₽):" FontWeight="Bold" Margin="0,5"/>
+        <TextBox x:Name="PriceBox" Grid.Row="5" Margin="0,5" Height="30"/>
+
+        <CheckBox x:Name="IsActiveBox" Grid.Row="6" Content="Карт активен" Margin="0,15,0,0" VerticalAlignment="Top"/>
+
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button x:Name="SaveBtn" Content="Сохранить" Width="100" Height="35" Margin="5" Background="#27AE60" Click="SaveBtn_Click"/>
+            <Button x:Name="CancelBtn" Content="Отмена" Width="100" Height="35" Margin="5" Background="#95A5A6" Click="CancelBtn_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
