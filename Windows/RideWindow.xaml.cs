@@ -1,4 +1,5 @@
-﻿using System;
+﻿// RideWindow.xaml.cs
+using System;
 using System.Linq;
 using System.Windows;
 using KartingCenter.Models;
@@ -34,7 +35,7 @@ namespace KartingCenter.Windows
                 Title = "Добавление заезда";
                 RideDatePicker.SelectedDate = DateTime.Today;
                 StartTimeBox.Text = "10:00:00";
-                AmountBox.Text = "0.00";  
+                AmountBox.Text = "0.00";
             }
         }
 
@@ -46,11 +47,48 @@ namespace KartingCenter.Windows
                 LocationCombo.SelectedIndex = 0;
         }
 
+        private bool ValidateData(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (RideDatePicker.SelectedDate == null)
+            {
+                errorMessage = "Выберите дату заезда";
+                return false;
+            }
+
+            if (RideDatePicker.SelectedDate.Value.Date < DateTime.Today.Date)
+            {
+                errorMessage = "Дата заезда не может быть в прошлом";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(StartTimeBox.Text))
+            {
+                errorMessage = "Введите время старта";
+                return false;
+            }
+
+            if (!TimeSpan.TryParse(StartTimeBox.Text, out TimeSpan startTime))
+            {
+                errorMessage = "Введите корректное время в формате ЧЧ:ММ:СС";
+                return false;
+            }
+
+            if (LocationCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите локацию";
+                return false;
+            }
+
+            return true;
+        }
+
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (RideDatePicker.SelectedDate == null || LocationCombo.SelectedValue == null)
+            if (!ValidateData(out string errorMessage))
             {
-                MessageBox.Show("Заполните все поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

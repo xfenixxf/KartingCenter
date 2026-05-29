@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿
+using System.Windows;
 using KartingCenter.Models;
 using KartingCenter.Services;
 
@@ -19,28 +20,47 @@ namespace KartingCenter.Windows
 
             if (_isEditMode)
             {
-                Title = "✏️ Редактирование локации";
+                Title = "Редактирование локации";
                 NameBox.Text = location.Name;
                 AddressBox.Text = location.Address;
             }
             else
             {
-                Title = "➕ Добавление локации";
+                Title = "Добавление локации";
             }
+        }
+
+        private bool ValidateData(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(NameBox.Text))
+            {
+                errorMessage = "Название локации обязательно для заполнения";
+                return false;
+            }
+
+            if (NameBox.Text.Length < 2 || NameBox.Text.Length > 100)
+            {
+                errorMessage = "Название локации должно содержать от 2 до 100 символов";
+                return false;
+            }
+
+            return true;
         }
 
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(NameBox.Text))
+            if (!ValidateData(out string errorMessage))
             {
-                MessageBox.Show("Введите название локации", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var location = new Location
             {
-                Name = NameBox.Text,
-                Address = AddressBox.Text
+                Name = NameBox.Text.Trim(),
+                Address = AddressBox.Text?.Trim()
             };
 
             bool success;

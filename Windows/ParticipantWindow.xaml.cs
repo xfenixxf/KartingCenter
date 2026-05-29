@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Windows;
 using KartingCenter.Models;
@@ -48,12 +49,42 @@ namespace KartingCenter.Windows
             KartCombo.SelectedValuePath = "Id";
         }
 
+        private bool ValidateData(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (ClientCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите участника";
+                return false;
+            }
+
+            if (TeamCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите команду";
+                return false;
+            }
+
+            if (RideCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите заезд";
+                return false;
+            }
+
+            if (KartCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите карт";
+                return false;
+            }
+
+            return true;
+        }
+
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (ClientCombo.SelectedValue == null || TeamCombo.SelectedValue == null ||
-                RideCombo.SelectedValue == null || KartCombo.SelectedValue == null)
+            if (!ValidateData(out string errorMessage))
             {
-                MessageBox.Show("Заполните все поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

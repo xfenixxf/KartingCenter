@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿
+using System.Windows;
 using KartingCenter.Models;
 using KartingCenter.Services;
 
@@ -30,17 +31,36 @@ namespace KartingCenter.Windows
             }
         }
 
-        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private bool ValidateData(out string errorMessage)
         {
+            errorMessage = string.Empty;
+
             if (string.IsNullOrWhiteSpace(NameBox.Text))
             {
-                MessageBox.Show("Введите название команды", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                errorMessage = "Название команды обязательно для заполнения";
+                return false;
+            }
+
+            if (NameBox.Text.Length < 2 || NameBox.Text.Length > 200)
+            {
+                errorMessage = "Название команды должно содержать от 2 до 200 символов";
+                return false;
+            }
+
+            return true;
+        }
+
+        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ValidateData(out string errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var team = new Team
             {
-                Name = NameBox.Text,
+                Name = NameBox.Text.Trim(),
                 IsActive = IsActiveBox.IsChecked ?? true
             };
 

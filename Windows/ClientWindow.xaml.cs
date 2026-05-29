@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using KartingCenter.Models;
 using KartingCenter.Services;
@@ -31,18 +33,50 @@ namespace KartingCenter.Windows
             }
         }
 
+        private bool ValidateData(out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(FullNameBox.Text))
+            {
+                errorMessage = "ФИО обязательно для заполнения";
+                return false;
+            }
+
+            if (FullNameBox.Text.Length < 2 || FullNameBox.Text.Length > 200)
+            {
+                errorMessage = "ФИО должно содержать от 2 до 200 символов";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(PhoneBox.Text))
+            {
+                errorMessage = "Телефон обязателен для заполнения";
+                return false;
+            }
+
+            string phonePattern = @"^[\+]?[0-9\s\-\(\)]{10,20}$";
+            if (!Regex.IsMatch(PhoneBox.Text, phonePattern))
+            {
+                errorMessage = "Введите корректный номер телефона";
+                return false;
+            }
+
+            return true;
+        }
+
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(FullNameBox.Text) || string.IsNullOrWhiteSpace(PhoneBox.Text))
+            if (!ValidateData(out string errorMessage))
             {
-                MessageBox.Show("Заполните все поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var client = new Client
             {
-                FullName = FullNameBox.Text,
-                Phone = PhoneBox.Text,
+                FullName = FullNameBox.Text.Trim(),
+                Phone = PhoneBox.Text.Trim(),
                 IsPermanent = IsPermanentBox.IsChecked ?? false
             };
 
@@ -51,13 +85,11 @@ namespace KartingCenter.Windows
             {
                 client.Id = _editingClient.Id;
                 success = await _api.UpdateClientAsync(client.Id, client);
-                
             }
             else
             {
                 var result = await _api.CreateClientAsync(client);
                 success = result != null;
-               
             }
 
             if (success)

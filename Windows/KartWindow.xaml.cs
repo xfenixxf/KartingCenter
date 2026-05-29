@@ -1,4 +1,5 @@
-﻿using System;
+﻿// KartWindow.xaml.cs
+using System;
 using System.Linq;
 using System.Windows;
 using KartingCenter.Models;
@@ -44,25 +45,68 @@ namespace KartingCenter.Windows
                 CartTypeCombo.SelectedIndex = 0;
         }
 
-        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private bool ValidateData(out string errorMessage)
         {
-            if (string.IsNullOrWhiteSpace(SerialNumberBox.Text) || CartTypeCombo.SelectedValue == null)
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(SerialNumberBox.Text))
             {
-                MessageBox.Show("Заполните все поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                errorMessage = "Серийный номер обязателен для заполнения";
+                return false;
             }
 
-            if (!decimal.TryParse(PriceBox.Text, out decimal price) || price <= 0)
+            if (SerialNumberBox.Text.Length < 3 || SerialNumberBox.Text.Length > 50)
             {
-                MessageBox.Show("Цена должна быть положительным числом", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                errorMessage = "Серийный номер должен содержать от 3 до 50 символов";
+                return false;
+            }
+
+            if (CartTypeCombo.SelectedValue == null)
+            {
+                errorMessage = "Выберите тип карта";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(PriceBox.Text))
+            {
+                errorMessage = "Цена обязательна для заполнения";
+                return false;
+            }
+
+            if (!decimal.TryParse(PriceBox.Text, out decimal price))
+            {
+                errorMessage = "Введите корректное числовое значение цены";
+                return false;
+            }
+
+            if (price <= 0)
+            {
+                errorMessage = "Цена должна быть положительным числом";
+                return false;
+            }
+
+            if (price > 1000000)
+            {
+                errorMessage = "Цена не может превышать 1 000 000 рублей";
+                return false;
+            }
+
+            return true;
+        }
+
+        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ValidateData(out string errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var kart = new Kart
             {
-                SerialNumber = SerialNumberBox.Text,
+                SerialNumber = SerialNumberBox.Text.Trim(),
                 CartTypeId = (int)CartTypeCombo.SelectedValue,
-                Price = price,
+                Price = decimal.Parse(PriceBox.Text),
                 IsActive = IsActiveBox.IsChecked ?? true
             };
 
@@ -71,13 +115,11 @@ namespace KartingCenter.Windows
             {
                 kart.Id = _editingKart.Id;
                 success = await _api.UpdateKartAsync(kart.Id, kart);
-               
             }
             else
             {
                 var result = await _api.CreateKartAsync(kart);
                 success = result != null;
-               
             }
 
             if (success)
