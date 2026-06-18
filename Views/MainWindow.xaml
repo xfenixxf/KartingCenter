@@ -22,18 +22,22 @@
                 <TextBlock x:Name="StatusText" Text="Статус: Подключение..." Foreground="Yellow" Margin="10,0" FontWeight="Bold"/>
                 <Border x:Name="StickerIndicator" Width="30" Height="30" CornerRadius="15" Background="Gray" Margin="10,0"/>
                 <TextBlock x:Name="StatsText" Text="" Foreground="White" Margin="10,0"/>
+
+                <StackPanel x:Name="ExportImportPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="10,0">
+                    <Button x:Name="ExportBtn" Content="Экспорт в Excel" Width="150" Height="30" Background="#27AE60" Foreground="White" Click="ExportBtn_Click" Margin="5,0"/>
+                    <Button x:Name="ImportBtn" Content="Импорт из Excel" Width="150" Height="30" Background="#F39C12" Foreground="White" Click="ImportBtn_Click" Margin="5,0"/>
+                </StackPanel>
             </StackPanel>
         </Border>
 
-        <TabControl Grid.Row="2" Margin="10">
+        <TabControl Grid.Row="2" Margin="10" x:Name="MainTabControl">
 
-            <TabItem Header="Клиенты">
+            <TabItem x:Name="TabClients" Header="Клиенты">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddClientBtn" Content="Добавить" Width="122" Height="30" Background="#27AE60" Foreground="White" Click="AddClientBtn_Click"/>
@@ -42,7 +46,6 @@
                             <Button x:Name="RefreshClientsBtn" Content="Обновить" Width="137" Height="30" Click="RefreshClientsBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="ClientsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
@@ -54,13 +57,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Команды">
+            <TabItem x:Name="TabTeams" Header="Команды">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddTeamBtn" Content="Добавить" Width="136" Height="30" Background="#27AE60" Foreground="White" Click="AddTeamBtn_Click"/>
@@ -69,7 +71,6 @@
                             <Button x:Name="RefreshTeamsBtn" Content="Обновить" Width="123" Height="30" Click="RefreshTeamsBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="TeamsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
@@ -80,13 +81,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Типы картов">
+            <TabItem x:Name="TabCartTypes" Header="Типы картов">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddCartTypeBtn" Content="Добавить" Width="125" Height="30" Background="#27AE60" Foreground="White" Click="AddCartTypeBtn_Click"/>
@@ -95,7 +95,6 @@
                             <Button x:Name="RefreshCartTypesBtn" Content="Обновить" Width="120" Height="30" Click="RefreshCartTypesBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="CartTypesGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
@@ -107,13 +106,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Карты">
+            <TabItem x:Name="TabKarts" Header="Карты">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddKartBtn" Content="Добавить" Width="126" Height="30" Background="#27AE60" Foreground="White" Click="AddKartBtn_Click"/>
@@ -122,7 +120,6 @@
                             <Button x:Name="RefreshKartsBtn" Content="Обновить" Width="118" Height="30" Click="RefreshKartsBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="KartsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="0.8*"/>
@@ -135,13 +132,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Локации">
+            <TabItem x:Name="TabLocations" Header="Локации">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddLocationBtn" Content="Добавить" Width="135" Height="30" Background="#27AE60" Foreground="White" Click="AddLocationBtn_Click"/>
@@ -150,7 +146,6 @@
                             <Button x:Name="RefreshLocationsBtn" Content="Обновить" Width="124" Height="30" Click="RefreshLocationsBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="LocationsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
@@ -161,14 +156,13 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Заезды">
+            <TabItem x:Name="TabRides" Header="Заезды">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <StackPanel>
                             <WrapPanel Margin="0,0,0,5">
@@ -182,15 +176,11 @@
                                 <DatePicker x:Name="FilterDatePicker" Width="120" Margin="5" SelectedDateChanged="FilterDatePicker_SelectedDateChanged"/>
                                 <Button x:Name="ShowAllRidesBtn" Content="Показать все" Width="126" Click="ShowAllRidesBtn_Click"/>
                                 <TextBlock Text="Фильтр по месяцу:" VerticalAlignment="Center" Margin="5"/>
-                                <DatePicker x:Name="MonthFilterPicker" Width="120" Margin="5" 
-                SelectedDateChanged="MonthFilterPicker_SelectedDateChanged"
-                DisplayDateStart="2024-01-01" DisplayDateEnd="2026-12-31"/>
-                                <Button x:Name="ClearMonthFilterBtn" Content="Сбросить месяц" Width="128" 
-            Click="ClearMonthFilterBtn_Click" Height="33"/>
+                                <DatePicker x:Name="MonthFilterPicker" Width="120" Margin="5" SelectedDateChanged="MonthFilterPicker_SelectedDateChanged" DisplayDateStart="2024-01-01" DisplayDateEnd="2026-12-31"/>
+                                <Button x:Name="ClearMonthFilterBtn" Content="Сбросить месяц" Width="128" Click="ClearMonthFilterBtn_Click" Height="33"/>
                             </WrapPanel>
                         </StackPanel>
                     </Border>
-
                     <DataGrid x:Name="RidesGrid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="0.5*"/>
@@ -205,13 +195,12 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Участие">
+            <TabItem x:Name="TabParticipants" Header="Участие">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
                         <WrapPanel>
                             <Button x:Name="AddParticipantBtn" Content="Записать участника" Width="194" Height="35" Background="#27AE60" Foreground="White" Click="AddParticipantBtn_Click"/>
@@ -219,7 +208,6 @@
                             <Button x:Name="RefreshParticipantsBtn" Content="Обновить" Width="128" Height="35" Click="RefreshParticipantsBtn_Click"/>
                         </WrapPanel>
                     </Border>
-
                     <DataGrid x:Name="ParticipantsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="0.5*"/>
@@ -228,6 +216,110 @@
                             <DataGridTextColumn Header="Заезд" Binding="{Binding RideId}" Width="0.8*"/>
                             <DataGridTextColumn Header="Карт" Binding="{Binding KartSerialNumber}" Width="1.2*"/>
                             <DataGridTextColumn Header="Дата" Binding="{Binding ParticipantDate, StringFormat=dd.MM.yyyy}" Width="1*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="TabParts" Header="Запчасти">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
+                        <WrapPanel>
+                            <Button x:Name="AddPartBtn" Content="Добавить" Width="125" Height="30" Background="#27AE60" Foreground="White" Click="AddPartBtn_Click"/>
+                            <Button x:Name="EditPartBtn" Content="Редактировать" Width="154" Height="30" Background="#F39C12" Foreground="White" Click="EditPartBtn_Click"/>
+                            <Button x:Name="DeletePartBtn" Content="Удалить" Width="100" Height="30" Margin="2" Background="#E74C3C" Foreground="White" Click="DeletePartBtn_Click"/>
+                            <Button x:Name="RefreshPartsBtn" Content="Обновить" Width="120" Height="30" Click="RefreshPartsBtn_Click"/>
+                        </WrapPanel>
+                    </Border>
+                    <DataGrid x:Name="PartsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding NameParts}" Width="3*"/>
+                            <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="4*"/>
+                            <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" Width="1*"/>
+                            <DataGridTextColumn Header="Цена" Binding="{Binding Price}" Width="1*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="TabTO" Header="Техобслуживание">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
+                        <WrapPanel>
+                            <Button x:Name="AddTOBtn" Content="Добавить" Width="125" Height="30" Background="#27AE60" Foreground="White" Click="AddTOBtn_Click"/>
+                            <Button x:Name="EditTOBtn" Content="Редактировать" Width="154" Height="30" Background="#F39C12" Foreground="White" Click="EditTOBtn_Click"/>
+                            <Button x:Name="DeleteTOBtn" Content="Удалить" Width="100" Height="30" Margin="2" Background="#E74C3C" Foreground="White" Click="DeleteTOBtn_Click"/>
+                            <Button x:Name="RefreshTOBtn" Content="Обновить" Width="120" Height="30" Click="RefreshTOBtn_Click"/>
+                        </WrapPanel>
+                    </Border>
+                    <DataGrid x:Name="TOGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="0.8*"/>
+                            <DataGridTextColumn Header="Карт" Binding="{Binding KartSerialNumber}" Width="1.5*"/>
+                            <DataGridTextColumn Header="Тип ТО" Binding="{Binding TypeTOName}" Width="1.5*"/>
+                            <DataGridTextColumn Header="Мастер" Binding="{Binding MasterFullName}" Width="2*"/>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="1*"/>
+                            <DataGridCheckBoxColumn Header="Завершено" Binding="{Binding IsCompleted}" Width="0.8*"/>
+                            <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="2.5*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="TabTypeTO" Header="Типы ТО">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
+                        <WrapPanel>
+                            <Button x:Name="AddTypeTOBtn" Content="Добавить" Width="125" Height="30" Background="#27AE60" Foreground="White" Click="AddTypeTOBtn_Click"/>
+                            <Button x:Name="EditTypeTOBtn" Content="Редактировать" Width="154" Height="30" Background="#F39C12" Foreground="White" Click="EditTypeTOBtn_Click"/>
+                            <Button x:Name="DeleteTypeTOBtn" Content="Удалить" Width="100" Height="30" Margin="2" Background="#E74C3C" Foreground="White" Click="DeleteTypeTOBtn_Click"/>
+                            <Button x:Name="RefreshTypeTOBtn" Content="Обновить" Width="120" Height="30" Click="RefreshTypeTOBtn_Click"/>
+                        </WrapPanel>
+                    </Border>
+                    <DataGrid x:Name="TypeTOGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding NameType}" Width="2*"/>
+                            <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="3*"/>
+                            <DataGridTextColumn Header="Интервал (дни)" Binding="{Binding RecommendedInterval}" Width="1.5*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="TabPersonal" Header="Сотрудники">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="#E0E0E0" Padding="5" Margin="0,0,0,10">
+                        <WrapPanel>
+                            <Button x:Name="AddPersonalBtn" Content="Добавить" Width="125" Height="30" Background="#27AE60" Foreground="White" Click="AddPersonalBtn_Click"/>
+                            <Button x:Name="EditPersonalBtn" Content="Редактировать" Width="154" Height="30" Background="#F39C12" Foreground="White" Click="EditPersonalBtn_Click"/>
+                            <Button x:Name="DeletePersonalBtn" Content="Удалить" Width="100" Height="30" Margin="2" Background="#E74C3C" Foreground="White" Click="DeletePersonalBtn_Click"/>
+                            <Button x:Name="RefreshPersonalBtn" Content="Обновить" Width="120" Height="30" Click="RefreshPersonalBtn_Click"/>
+                        </WrapPanel>
+                    </Border>
+                    <DataGrid x:Name="PersonalGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="1*"/>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="3*"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="3*"/>
+                            <DataGridTextColumn Header="Роль" Binding="{Binding RoleName}" Width="2*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

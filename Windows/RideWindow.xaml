@@ -19,25 +19,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Дата заезда -->
         <TextBlock Grid.Row="0" Text="Дата заезда:" FontWeight="Bold" Margin="0,5"/>
         <DatePicker x:Name="RideDatePicker" Grid.Row="1" Margin="0,5" Height="30"/>
 
-        <!-- Время старта -->
         <TextBlock Grid.Row="2" Text="Время старта (ЧЧ:ММ:СС):" FontWeight="Bold" Margin="0,5"/>
         <TextBox x:Name="StartTimeBox" Grid.Row="3" Margin="0,5" Height="30" Text="10:00:00"/>
 
-        <!-- Локация -->
         <TextBlock Grid.Row="4" Text="Локация:" FontWeight="Bold" Margin="0,5"/>
         <ComboBox x:Name="LocationCombo" Grid.Row="5" Margin="0,5" Height="30" 
                   DisplayMemberPath="Name" SelectedValuePath="Id"/>
 
-        <!-- Сумма оплаты (только для чтения) -->
         <TextBlock Grid.Row="6" Text="Сумма оплаты (₽):" FontWeight="Bold" Margin="0,5"/>
         <TextBox x:Name="AmountBox" Grid.Row="7" Margin="0,5" Height="30" 
                  IsReadOnly="True" Background="#F0F0F0" Text="0.00"/>
 
-        <!-- Кнопки -->
         <StackPanel Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button x:Name="SaveBtn" Content="Сохранить" Width="100" Height="35" Margin="5" 
                     Background="#27AE60" Foreground="White" Click="SaveBtn_Click"/>

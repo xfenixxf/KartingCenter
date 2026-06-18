@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -22,6 +23,162 @@ namespace KartingCenter.Services
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        public async Task<LoginResponseDTO> LoginAsync(string email, string password)
+        {
+            try
+            {
+                var loginRequest = new { Email = email, Password = password };
+                HttpResponseMessage response = await _client.PostAsJsonAsync("api/auth/login", loginRequest);
+                string responseBody = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonConvert.DeserializeObject<LoginResponseDTO>(responseBody);
+                }
+                else
+                {
+                    return new LoginResponseDTO
+                    {
+                        Success = false,
+                        Message = $"Ошибка авторизации: {response.StatusCode}\n{responseBody}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new LoginResponseDTO
+                {
+                    Success = false,
+                    Message = $"Ошибка: {ex.Message}"
+                };
+            }
+        }
+       
+
+        public async Task<bool> CreateLocationIfNotExists(Location location, Dictionary<string, int> map)
+        {
+            var existing = await GetLocationsAsync();
+            var found = existing.FirstOrDefault(l => l.Name == location.Name);
+            if (found != null)
+            {
+                map[location.Name] = found.Id;
+                return true;
+            }
+            var created = await CreateLocationAsync(location);
+            if (created != null)
+            {
+                map[location.Name] = created.Id;
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateTeamIfNotExists(Team team, Dictionary<string, int> map)
+        {
+            var existing = await GetTeamsAsync();
+            var found = existing.FirstOrDefault(t => t.Name == team.Name);
+            if (found != null)
+            {
+                map[team.Name] = found.Id;
+                return true;
+            }
+            var created = await CreateTeamAsync(team);
+            if (created != null)
+            {
+                map[team.Name] = created.Id;
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateClientIfNotExists(Client client, Dictionary<string, int> map)
+        {
+            var existing = await GetClientsAsync();
+            var found = existing.FirstOrDefault(c => c.FullName == client.FullName && c.Phone == client.Phone);
+            if (found != null)
+            {
+                map[client.FullName] = found.Id;
+                return true;
+            }
+            var created = await CreateClientAsync(client);
+            if (created != null)
+            {
+                map[client.FullName] = created.Id;
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateKartIfNotExists(Kart kart, Dictionary<string, int> map)
+        {
+            var existing = await GetKartsAsync();
+            var found = existing.FirstOrDefault(k => k.SerialNumber == kart.SerialNumber);
+            if (found != null)
+            {
+                map[kart.SerialNumber] = found.Id;
+                return true;
+            }
+            var created = await CreateKartAsync(kart);
+            if (created != null)
+            {
+                map[kart.SerialNumber] = created.Id;
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateRideIfNotExists(Ride ride)
+        {
+            var existing = await GetRidesAsync();
+            var found = existing.FirstOrDefault(r => r.RideDate == ride.RideDate &&
+                                                     r.StartTime == ride.StartTime &&
+                                                     r.LocationId == ride.LocationId);
+            if (found != null)
+            {
+                return true;  
+            }
+            var created = await CreateRideAsync(ride);
+            return created != null;
+        }
+        public async Task<bool> CreateCartTypeIfNotExists(CartType cartType, Dictionary<string, int> map)
+        {
+            var existing = await GetCartTypesAsync();
+            var found = existing.FirstOrDefault(c => c.Name == cartType.Name);
+            if (found != null)
+            {
+                map[cartType.Name] = found.Id;
+                return true;
+            }
+
+            var created = await CreateCartTypeAsync(cartType);
+            if (created != null)
+            {
+                map[cartType.Name] = created.Id;
+                return true;
+            }
+            return false;
+        }
+        public async Task<RegisterResult> RegisterAsync(string email, string password)
+        {
+            try
+            {
+                var request = new { Email = email, Password = password };
+                HttpResponseMessage response = await _client.PostAsJsonAsync("api/auth/register", request);
+                string responseBody = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonConvert.DeserializeObject<RegisterResult>(responseBody);
+                }
+                else
+                {
+                    return new RegisterResult { Success = false, Message = $"Ошибка регистрации: {response.StatusCode}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new RegisterResult { Success = false, Message = $"Ошибка: {ex.Message}" };
+            }
         }
 
         public async Task<List<Client>> GetClientsAsync()
@@ -284,6 +441,17 @@ namespace KartingCenter.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<List<Ride>> GetRidesByMonthAsync(int year, int month)
+        {
+            HttpResponseMessage response = await _client.GetAsync($"api/rides/bymonth/{year}/{month}");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Ride>>(json);
+            }
+            return new List<Ride>();
+        }
+
         public async Task<List<RideParticipant>> GetRideParticipantsAsync()
         {
             HttpResponseMessage response = await _client.GetAsync("api/rideparticipants");
@@ -317,9 +485,7 @@ namespace KartingCenter.Services
             try
             {
                 HttpResponseMessage response = await _client.PostAsJsonAsync("api/rideparticipants", participant);
-
                 string responseBody = await response.Content.ReadAsStringAsync();
-
                 if (response.IsSuccessStatusCode)
                 {
                     return JsonConvert.DeserializeObject<RideParticipant>(responseBody);
@@ -343,17 +509,12 @@ namespace KartingCenter.Services
             {
                 var allParticipants = await GetRideParticipantsAsync();
                 var rideParticipants = allParticipants.FindAll(p => p.RideId == rideId);
-
                 decimal totalAmount = 0;
                 foreach (var participant in rideParticipants)
                 {
                     var kart = await GetKartByIdAsync(participant.KartId);
-                    if (kart != null)
-                    {
-                        totalAmount += kart.Price;
-                    }
+                    if (kart != null) totalAmount += kart.Price;
                 }
-
                 var ride = await GetRideByIdAsync(rideId);
                 if (ride != null)
                 {
@@ -369,6 +530,153 @@ namespace KartingCenter.Services
             }
         }
 
+        public async Task<List<PartDTO>> GetPartsAsync()
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/parts");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<PartDTO>>(json);
+            }
+            return new List<PartDTO>();
+        }
+
+        public async Task<PartDTO> CreatePartAsync(CreatePartDTO part)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/parts", part);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<PartDTO>(json);
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdatePartAsync(int id, CreatePartDTO part)
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/parts/{id}", part);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeletePartAsync(int id)
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"api/parts/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<TODTO>> GetTOAsync()
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/to");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<TODTO>>(json);
+            }
+            return new List<TODTO>();
+        }
+
+        public async Task<TODTO> CreateTOAsync(CreateTODTO dto)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/to", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TODTO>(json);
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdateTOAsync(int id, UpdateTODTO dto)
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/to/{id}", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteTOAsync(int id)
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"api/to/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<TypeTODTO>> GetTypeTOAsync()
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/typeto");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<TypeTODTO>>(json);
+            }
+            return new List<TypeTODTO>();
+        }
+
+        public async Task<TypeTODTO> CreateTypeTOAsync(CreateTypeTODTO dto)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/typeto", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TypeTODTO>(json);
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdateTypeTOAsync(int id, CreateTypeTODTO dto)
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/typeto/{id}", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteTypeTOAsync(int id)
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"api/typeto/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<PersonalDTO>> GetPersonalAsync()
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/personal");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<PersonalDTO>>(json);
+            }
+            return new List<PersonalDTO>();
+        }
+
+        public async Task<PersonalDTO> CreatePersonalAsync(CreatePersonalDTO dto)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/personal", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<PersonalDTO>(json);
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdatePersonalAsync(int id, CreatePersonalDTO dto)
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/personal/{id}", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeletePersonalAsync(int id)
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"api/personal/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<Role>> GetRolesAsync()
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/auth/roles");
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Role>>(json);
+            }
+            return new List<Role>();
+        }
+
         public async Task<DailyStats> GetDailyStatsAsync(DateTime date)
         {
             string dateStr = date.ToString("yyyy-MM-dd");
@@ -379,16 +687,6 @@ namespace KartingCenter.Services
                 return JsonConvert.DeserializeObject<DailyStats>(json);
             }
             return null;
-        }
-        public async Task<List<Ride>> GetRidesByMonthAsync(int year, int month)
-        {
-            HttpResponseMessage response = await _client.GetAsync($"api/rides/bymonth/{year}/{month}");
-            if (response.IsSuccessStatusCode)
-            {
-                string json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<Ride>>(json);
-            }
-            return new List<Ride>();
         }
     }
 }

@@ -1,17 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KartingCenter.Windows;
+using OfficeOpenXml;
 using System.Windows;
 
 namespace KartingCenter
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            ExcelPackage.License.SetNonCommercialPersonal("Иван Иванов");
+            var loginWindow = new LoginWindow();
+            this.MainWindow = loginWindow;
+
+            bool? result = loginWindow.ShowDialog();
+
+            if (result == true)
+            {
+                var mainWindow = new MainWindow();
+                this.MainWindow = mainWindow;
+                mainWindow.Show();
+            }
+            else
+            {
+                Shutdown();
+            }
+        
+       
+        }
     }
 }
